@@ -1,0 +1,6 @@
+@ViniciusMiranda_HostAddress = http://localhost:5034
+
+GET {{ViniciusMiranda_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
