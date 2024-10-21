@@ -1,10 +1,14 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using ViniciusMiranda.Data;
+using ViniciusMiranda.Models;
+using ViniciusMiranda.Schemas;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddDbContext<AppDbContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -16,29 +20,33 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapPost("/api/funcionario/cadastrar", async (AddFuncionario funcionario, AppDbContext db) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    Funcionario novoFuncionario = new Funcionario
+    {
+        CPF = funcionario.CPF,
+        Nome = funcionario.Nome
+    };
+    await db.AddAsync(novoFuncionario);
+    await db.SaveChangesAsync();
 
-app.MapGet("/weatherforecast", () =>
+    return Results.Created();
+});
+app.MapGet("/api/funcionario/listar", async (AppDbContext db) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    var funcionarios = await db.Funcionarios.ToListAsync();
 
+    return Results.Ok(funcionarios);
+});
+app.MapPost("/api/folha/cadastrar", async (AddFolhaPagamento folhaPagamento, AppDbContext db) =>
+{
+    // FolhaPagamento novaFolhaPagamento = new FolhaPagamento
+    // {
+
+    // };
+    // await db.AddAsync(novoFuncionario);
+    // await db.SaveChangesAsync();
+
+    // return Results.Created();
+});
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
