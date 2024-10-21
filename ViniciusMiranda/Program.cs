@@ -1,4 +1,6 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ViniciusMiranda.Data;
 using ViniciusMiranda.Models;
@@ -38,15 +40,54 @@ app.MapGet("/api/funcionario/listar", async (AppDbContext db) =>
 
     return Results.Ok(funcionarios);
 });
-app.MapPost("/api/folha/cadastrar", async (AddFolhaPagamento folhaPagamento, AppDbContext db) =>
+app.MapPost("/api/folha/cadastrar", async ([FromBody] AddFolhaPagamento folhaPagamento, AppDbContext db) =>
 {
-    // FolhaPagamento novaFolhaPagamento = new FolhaPagamento
-    // {
 
-    // };
-    // await db.AddAsync(novoFuncionario);
-    // await db.SaveChangesAsync();
+    var funcionario = await db.Funcionarios.FirstOrDefaultAsync(f => f.FuncionarioId == folhaPagamento.FuncionarioId);
 
-    // return Results.Created();
+    if (funcionario is null) return Results.NotFound();
+
+    FolhaPagamento novaFolhaPagamento = new FolhaPagamento
+    {
+        Valor = folhaPagamento.Valor,
+        Quantidade = folhaPagamento.Quantidade,
+        Ano = folhaPagamento.Ano,
+        Mes = folhaPagamento.Mes,
+        FuncionarioId = folhaPagamento.FuncionarioId
+    };
+    await db.AddAsync(novaFolhaPagamento);
+    await db.SaveChangesAsync();
+
+    return Results.Created();
 });
+
+app.MapGet("/api/folha/listar", async (AppDbContext db) =>
+{
+    var folhasPagamentos = await db.FolhasPagamentos.Include(f => f.Funcionario).ToListAsync();
+
+    if (folhasPagamentos is null) return Results.NotFound();
+
+    return Results.Ok(folhasPagamentos);
+});
+
+app.MapGet("/api/folha/buscar/{cpf}/{mes}/{ano}", (string cpf, int mes, int ano, AppDbContext db) =>
+{
+    //Include depois
+    var folhaPagamento = db.FolhasPagamentos
+    .Include(f => f.Funcionario)
+    .FirstOrDefault(f => f.Funcionario.CPF.Equals(cpf) && f.Mes == mes && f.Ano == ano);
+
+    if (folhaPagamento is null) return Results.NotFound();
+
+    return Results.Ok(folhaPagamento);
+});
+
+decimal CalcularSalarioBruto(int horasTrabalhadas, decimal valorDaHora) =>
+    horasTrabalhadas * valorDaHora;
+
+decimal CalcularImpostoDeRenda(decimal salarioBruto)
+{
+    return 0;
+}
+
 app.Run();

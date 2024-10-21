@@ -7,6 +7,11 @@ public class FolhaPagamento
     public int Quantidade { get; set; }
     public int Mes { get; set; }
     public int Ano { get; set; }
-    public int FuncionarioId { get; set; }
+    public decimal SalarioBruto { get; set; }
+    public decimal ImpostoIrrf { get; set; }
+    public decimal ImportInss { get; set; }
+    public decimal ImportFgts { get; set; }
+    public decimal SalarioLiquido { get; set; }
+    public long FuncionarioId { get; set; }
     public Funcionario Funcionario { get; set; }
 }
