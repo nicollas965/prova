@@ -9,8 +9,8 @@ public class FolhaPagamento
     public int Ano { get; set; }
     public decimal SalarioBruto { get; set; }
     public decimal ImpostoIrrf { get; set; }
-    public decimal ImportInss { get; set; }
-    public decimal ImportFgts { get; set; }
+    public decimal ImpostoInss { get; set; }
+    public decimal ImpostoFgts { get; set; }
     public decimal SalarioLiquido { get; set; }
     public long FuncionarioId { get; set; }
     public Funcionario Funcionario { get; set; }
