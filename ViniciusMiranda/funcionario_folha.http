@@ -1,4 +1,4 @@
-@base_url = http://localhost:PORTA/api
+@base_url = http://localhost:8001/api
 
 # FUNCIONÁRIO ######################################
 
@@ -7,7 +7,7 @@ POST {{base_url}}/funcionario/cadastrar
 Content-Type: application/json
 
 {
-    "nome": "Seu nome",
+    "nome": "Diogo",
     "cpf" : "12345678912"
 }
 

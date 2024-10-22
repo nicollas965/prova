@@ -77,7 +77,7 @@ app.MapGet("/api/folha/listar", async (AppDbContext db) =>
 {
     var folhasPagamentos = await db.FolhasPagamentos.Include(f => f.Funcionario).ToListAsync();
 
-    if (folhasPagamentos is null) return Results.NotFound();
+    if (folhasPagamentos is null || folhasPagamentos.Count == 0) return Results.NotFound();
 
     return Results.Ok(folhasPagamentos);
 });
@@ -138,7 +138,7 @@ decimal CalcularDescontoINSS(decimal salarioBruto)
     }
     else
     {
-        desconto = salarioBruto - (decimal)621.03;
+        desconto = (decimal)621.03;
     }
     return desconto;
 }
